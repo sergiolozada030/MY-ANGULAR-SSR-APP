@@ -1,13 +1,30 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { afterRender, Component, inject, PLATFORM_ID } from '@angular/core';
+import { ProductComponent } from './components/product/product.component';
+import { AsyncPipe, isPlatformBrowser } from '@angular/common';
+import { ProductsService } from './services/products.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [ProductComponent, AsyncPipe],
+
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'my-angular-ssr-app';
+  public products$ = inject(ProductsService).execute();
+  private platformId = inject(PLATFORM_ID);
+
+  constructor() {
+    afterRender(() => {
+      localStorage.setItem('Name', 'Carlos');
+    });
+  }
+
+  ngOnInit() {
+    console.log('The current platform is: ', this.platformId);
+    /*     if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('Name', 'Sergio');
+    } */
+  }
 }
